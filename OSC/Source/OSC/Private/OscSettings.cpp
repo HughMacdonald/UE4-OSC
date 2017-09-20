@@ -10,6 +10,7 @@ UOscSettings::UOscSettings()
     _sendSocket(FUdpSocketBuilder(TEXT("OscSender")).Build())
 {
     SendTargets.Add(TEXT("127.0.0.1:8000"));
+    DefaultSendPort = 8000;
 }
 
 UOscSettings::UOscSettings(FVTableHelper & helper)
@@ -58,7 +59,19 @@ int32 UOscSettings::AddSendTarget(const FString & ip_port)
     {
         target->SetIp(address.Value);
         target->SetPort(port);
-        UE_LOG(LogOSC, Display, TEXT("Send target added: %s"), *ip_port);
+
+        UE_LOG( LogOSC, Display, TEXT( "Send target added: %s" ), *target->ToString(true));
+    }
+    else if(FIPv4Address::Parse(ip_port, address) && address != FIPv4Address::Any)
+    {
+        const int32 result = SendTargets.Find( ip_port );
+        if( result != INDEX_NONE )
+        {
+            SendTargets[result] = ip_port + ":c" + FString::FromInt(DefaultSendPort);
+            target->SetIp( address.Value );
+            target->SetPort( DefaultSendPort );
+            UE_LOG( LogOSC, Display, TEXT( "Send target added: %s" ), *target->ToString( true ) );
+        }
     }
     else
     {

@@ -33,6 +33,9 @@ public:
     FString ReceiveFrom;
 
     UPROPERTY(Config, EditAnywhere, Category=Send)
+    uint16 DefaultSendPort;
+
+    UPROPERTY(Config, EditAnywhere, Category=Send)
     TArray<FString> SendTargets;
 
     /**
@@ -61,7 +64,7 @@ public:
 public:
 
     /**
-     *  @brief Parse "8000" and "192.168.0.12" to IP and port values.
+     *  @brief Parse "192.168.0.12:8000" to IP and port values.
      *  @return true if succeed
      */
     static bool Parse(const FString & ip_port, FIPv4Address * address, uint32_t * port);
